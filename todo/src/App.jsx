@@ -29,6 +29,9 @@ function App() {
 
   const [search, setSearch] = useState("");
 
+  const [filter, setFilter] = useState("All");
+  const [sort, setSort] = useState("Asc");
+
   const addTodo = (text, category) => {
     //vamos adicionar um array de objetos em um novo todo
     const newTodos = [
@@ -64,21 +67,33 @@ function App() {
     <div className= "app">
       <h1>Lista de Tarefas</h1>
       <Search search={search} setSearch={setSearch}/>
-      <Filter />
+      <Filter filter={filter} setFilter={setFilter} setSort={setSort}/>
       <div className="todo-list">
         {todos
+          .filter((todo) => 
+            filter === "All" 
+            ? true 
+            : filter === "Completed" 
+            ? todo.isCompleted 
+            : !todos.isCompleted
+          )
           .filter((todo) =>
            todo.text.toLowerCase().includes(search.toLowerCase())
           )
-        .map((todo) => (        
+          //algoritmo de comparação
+          .sort((a, b) =>
+            sort === "Asc" 
+            ? a.text.localeCompare(b.text) 
+            : b.text.localeCompare(a.text)  
+          )
+          .map((todo) => (        
           // eslint-disable-next-line react/jsx-key
-          //no react sempre que repete um componente precisa de prop chamada key, usamos o id pois ele nunca repete
-          <Todo 
-            key={todo.id} 
-            todo={todo} 
-            removeTodo={removeTodo} 
-            completeTodo={completeTodo}
-          />
+            <Todo 
+              key={todo.id} 
+              todo={todo} 
+              removeTodo={removeTodo} 
+              completeTodo={completeTodo}
+            />
         ))}
       </div>
       <TodoForm addTodo={addTodo}/>
